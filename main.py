@@ -3,9 +3,9 @@ import pygame
 from dataclasses import dataclass
 from typing import Any
 
-HEIGHT = 400
-WIDTH = 400
-CELL_COUNT = 5
+HEIGHT = 1000
+WIDTH = 1000
+CELL_COUNT = 10
 FPS = 60
 COLOR = (218, 198, 169)
 
@@ -59,10 +59,9 @@ class Simulation:
         self.fps = fps
 
     def draw_grid(self, grid):
-        for i in range(int(WIDTH/grid.get_grid_size()), WIDTH, int(WIDTH/grid.get_grid_size())):
-            pygame.draw.line(self.__surface, "black", (0, i), (WIDTH, i))
-        for i in range(int(HEIGHT/grid.get_grid_size()), HEIGHT, int(HEIGHT/grid.get_grid_size())):
-            pygame.draw.line(self.__surface, "black", (i, 0), (i, HEIGHT))
+        for row in range(0, HEIGHT, int(HEIGHT/grid.get_grid_size())):
+            for col in range(0, WIDTH, int(WIDTH/grid.get_grid_size())):
+                pygame.draw.rect(self.__surface, "brown", (row, col, WIDTH/grid.get_grid_size(), HEIGHT/grid.get_grid_size()), 1)
 
     def draw_objects(self): #zaimplementować
         pass
@@ -96,6 +95,8 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+
+
         sim.update(grid)
         sim.clock.tick(sim.fps)
 
