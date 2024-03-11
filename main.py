@@ -1,4 +1,5 @@
 from enum import Enum
+import os
 import pygame
 from dataclasses import dataclass
 from typing import Any
@@ -64,8 +65,18 @@ class Simulation:
             for col in range(0, WIDTH, int(WIDTH/grid.get_grid_size())):
                 pygame.draw.rect(self.__surface, "brown", (row, col, WIDTH/grid.get_grid_size(), HEIGHT/grid.get_grid_size()), 1)
 
-    def draw_objects(self): #zaimplementować
-        pass
+    def draw_objects(self, grid):
+        grid = self.__grid.get_grid()
+        grid[0][0].type = CellType.WAITER
+        cell_size = HEIGHT // self.__grid.get_grid_size()
+
+        for row in range(self.__grid.get_grid_size()):
+            for col in range(self.__grid.get_grid_size()):
+                cell = grid[row][col]
+                if cell.type == CellType.WAITER:
+                    waiter_image = pygame.image.load("Kelner-AI-LAB\\Assets\\Images\\kelner.jpg")  # Ładowanie obrazu kelnera
+                    waiter_image = pygame.transform.scale(waiter_image, (cell_size, cell_size))  # Skalowanie obrazu do rozmiaru komórki
+                    self.__surface.blit(waiter_image, (col * cell_size, row * cell_size))  # Rysowanie obrazu na ekranie
 
     def update_state(self): #zaimplementować
         pass
@@ -73,7 +84,7 @@ class Simulation:
     def update_screen(self, grid):
         self.__surface.fill(COLOR)
         self.draw_grid(grid)
-        self.draw_objects()
+        self.draw_objects(grid)
         pygame.display.flip()
 
     def update(self, grid):
@@ -92,7 +103,6 @@ def main():
 
     sim = Simulation(grid, surface, clock, FPS, (HEIGHT, WIDTH))
 
-    waiter = Waiter("Assets/images/kelner.jpg", 0,0)
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
