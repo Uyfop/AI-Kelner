@@ -2,6 +2,7 @@ from enum import Enum
 import pygame
 from dataclasses import dataclass
 from typing import Any
+from Models.waiter import Waiter
 
 HEIGHT = 1000
 WIDTH = 1000
@@ -91,6 +92,7 @@ def main():
 
     sim = Simulation(grid, surface, clock, FPS, (HEIGHT, WIDTH))
 
+    waiter = Waiter("Assets/images/kelner.jpg", 0,0)
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
