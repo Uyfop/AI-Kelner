@@ -2,6 +2,9 @@ from enum import Enum
 import pygame
 from dataclasses import dataclass
 from typing import Any
+from Models import client
+from Models import waiter
+
 
 HEIGHT = 400
 WIDTH = 400
