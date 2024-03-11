@@ -4,10 +4,11 @@ from dataclasses import dataclass
 from typing import Any
 from Models.waiter import Waiter
 
-HEIGHT = 400
-WIDTH = 400
+HEIGHT = 1000
+WIDTH = 1000
 CELL_COUNT = 10
 FPS = 60
+COLOR = (218, 198, 169)
 
 ## TODO: 
 # - obiekty kelner, klient
@@ -58,8 +59,10 @@ class Simulation:
         self.clock = clock
         self.fps = fps
 
-    def draw_grid(self): #zaimplementować
-        pygame.draw.line(self.__surface, "black", (0, 0), self.__res) 
+    def draw_grid(self, grid):
+        for row in range(0, HEIGHT, int(HEIGHT/grid.get_grid_size())):
+            for col in range(0, WIDTH, int(WIDTH/grid.get_grid_size())):
+                pygame.draw.rect(self.__surface, "brown", (row, col, WIDTH/grid.get_grid_size(), HEIGHT/grid.get_grid_size()), 1)
 
     def draw_objects(self): #zaimplementować
         pass
@@ -67,15 +70,15 @@ class Simulation:
     def update_state(self): #zaimplementować
         pass
 
-    def update_screen(self):
-        self.__surface.fill("white")
-        self.draw_grid()
+    def update_screen(self, grid):
+        self.__surface.fill(COLOR)
+        self.draw_grid(grid)
         self.draw_objects()
         pygame.display.flip()
 
-    def update(self):
+    def update(self, grid):
         self.update_state()
-        self.update_screen()
+        self.update_screen(grid)
 
 
 def main():
@@ -94,7 +97,9 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-        sim.update()
+
+
+        sim.update(grid)
         sim.clock.tick(sim.fps)
 
 
