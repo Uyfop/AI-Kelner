@@ -42,15 +42,17 @@ class Grid:
         self.initialize_objects()
 
     def initialize_objects(self):
-        waiter_img = pygame.image.load("Kelner-AI-LAB\\Assets\\Images\\kelner.jpg")
+        waiter_img_path = os.path.join("Assets", "Images", "kelner.jpg")
+        waiter_img = pygame.image.load(waiter_img_path)
         waiter_img = pygame.transform.scale(waiter_img, (HEIGHT // CELL_COUNT, HEIGHT // CELL_COUNT))
         waiter = Waiter(waiter_img, 0, 0)
         self.set_cell(0, 0, CellType.WAITER, waiter)
 
-        client_folder = "Kelner-AI-LAB\\Assets\\Images\\clients"
+        client_folder_path = os.path.join("Assets", "Images", "clients")
+        client_folder = client_folder_path
         client_images = [os.path.join(client_folder, filename) for filename in os.listdir(client_folder) if filename.endswith((".jpg"))]
         random_client_image_path = random.choice(client_images)
-        print(random_client_image_path)
+
         client_img = pygame.image.load(random_client_image_path)
         client_img = pygame.transform.scale(client_img, (HEIGHT // CELL_COUNT, HEIGHT // CELL_COUNT))
         client = Client(client_img, 3, 3)
