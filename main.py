@@ -1,9 +1,11 @@
 from enum import Enum
 import os
+import random
 import pygame
 from dataclasses import dataclass
 from typing import Any
 from Models.waiter import Waiter
+from Models.client import Client
 
 HEIGHT = 1000
 WIDTH = 1000
@@ -37,6 +39,25 @@ class Grid:
             [Cell(None, None) for __ in range(self.__grid_size)] # po implementacji obiektów ustawić type i data
             for __ in range(self.__grid_size)
         ]
+        self.initialize_objects()
+
+    def initialize_objects(self):
+        waiter_img = pygame.image.load("Kelner-AI-LAB\\Assets\\Images\\kelner.jpg")
+        waiter_img = pygame.transform.scale(waiter_img, (HEIGHT // CELL_COUNT, HEIGHT // CELL_COUNT))
+        waiter = Waiter(waiter_img, 0, 0)
+        self.set_cell(0, 0, CellType.WAITER, waiter)
+
+        client_folder = "Kelner-AI-LAB\\Assets\\Images\\clients"
+        client_images = [os.path.join(client_folder, filename) for filename in os.listdir(client_folder) if filename.endswith((".jpg"))]
+        random_client_image_path = random.choice(client_images)
+        print(random_client_image_path)
+        client_img = pygame.image.load(random_client_image_path)
+        client_img = pygame.transform.scale(client_img, (HEIGHT // CELL_COUNT, HEIGHT // CELL_COUNT))
+        client = Client(client_img, 3, 3)
+        self.set_cell(3, 3, CellType.CLIENT, client)
+
+    def set_cell(self, row: int, col: int, cell_type: CellType, data: Any):
+        self.__grid[row][col] = Cell(cell_type, data)
 
     def get_grid(self) -> list[Cell]:
         return self.__grid
@@ -67,16 +88,14 @@ class Simulation:
 
     def draw_objects(self, grid):
         grid = self.__grid.get_grid()
-        grid[0][0].type = CellType.WAITER
         cell_size = HEIGHT // self.__grid.get_grid_size()
 
         for row in range(self.__grid.get_grid_size()):
             for col in range(self.__grid.get_grid_size()):
                 cell = grid[row][col]
-                if cell.type == CellType.WAITER:
-                    waiter_image = pygame.image.load("Kelner-AI-LAB\\Assets\\Images\\kelner.jpg")  # Ładowanie obrazu kelnera
-                    waiter_image = pygame.transform.scale(waiter_image, (cell_size, cell_size))  # Skalowanie obrazu do rozmiaru komórki
-                    self.__surface.blit(waiter_image, (col * cell_size, row * cell_size))  # Rysowanie obrazu na ekranie
+                if cell.type == CellType.WAITER or cell.type == CellType.CLIENT:
+                    image = cell.data._img
+                    self.__surface.blit(image, (col * cell_size, row * cell_size))
 
     def update_state(self): #zaimplementować
         pass
@@ -107,7 +126,6 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-
 
         sim.update(grid)
         sim.clock.tick(sim.fps)

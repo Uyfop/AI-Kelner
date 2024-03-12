@@ -1,5 +1,5 @@
-import string
 from enum import Enum
+import pygame
 
 
 class WaiterStatus(Enum):
@@ -10,11 +10,11 @@ class WaiterStatus(Enum):
 class Waiter:
     def __init__(
             self,
-            img: string,
+            img: pygame.Surface,
             x: int,
             y: int
     ):
-        self._img = img,
+        self._img = img
         self.pos = {'x': x, 'y': y}
         self.status = WaiterStatus.IDLE
 

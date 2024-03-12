@@ -1,5 +1,5 @@
-import string
 from enum import Enum
+import pygame
 
 
 class ClientStatus(Enum):
@@ -11,12 +11,12 @@ class ClientStatus(Enum):
 class Client:
     def __init__(
             self,
-            img: string,
+            img: pygame.Surface,
             x: int,
             y: int
     ):
-        self._img = img,
-        self.pos = {'x': x, 'y': y},
+        self._img = img
+        self.pos = {'x': x, 'y': y}
         self.status = ClientStatus.WAITING
 
     def change_status(self, new_status):
