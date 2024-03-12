@@ -3,19 +3,14 @@ import pygame
 
 
 class WaiterStatus(Enum):
-    IDLE = "Idle",
-    BUSY = 'Busy'
+    IDLE = ("Idle",)
+    BUSY = "Busy"
 
 
 class Waiter:
-    def __init__(
-            self,
-            img: pygame.Surface,
-            x: int,
-            y: int
-    ):
+    def __init__(self, img: pygame.Surface, x: int, y: int):
         self._img = img
-        self.pos = {'x': x, 'y': y}
+        self.pos = {"x": x, "y": y}
         self.status = WaiterStatus.IDLE
 
     def change_status(self, new_status):
