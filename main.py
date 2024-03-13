@@ -3,7 +3,7 @@ from Components import Grid, Simulation
 
 HEIGHT = 800
 WIDTH = 800
-CELL_COUNT = 10
+CELL_COUNT = 8
 FPS = 60
 BACKGROUND_COLOR = (218, 198, 169)
 WALL_COLOR = (102, 51, 0)

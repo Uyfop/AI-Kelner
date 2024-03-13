@@ -29,7 +29,7 @@ class Simulation:
     def initialize_objects(self):
         grid_size = self.__grid.get_grid_size()
 
-        waiter_img_path = os.path.join("Assets", "Images", "kelner.jpg")
+        waiter_img_path = os.path.join("Assets", "Images", "waiter.png")
         waiter_img = pygame.image.load(waiter_img_path)
         waiter_img = pygame.transform.scale(
             waiter_img,
@@ -43,7 +43,7 @@ class Simulation:
         client_images = [
             os.path.join(client_folder, filename)
             for filename in os.listdir(client_folder)
-            if filename.endswith((".jpg"))
+            if filename.endswith((".png"))
         ]
         random_client_image_path = random.choice(client_images)
 
