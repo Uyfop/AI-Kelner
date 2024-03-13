@@ -14,14 +14,16 @@ class Simulation:
         clock: pygame.time.Clock,
         fps: int,
         res: tuple[int, int],
-        color: tuple[int, int, int],
+        bg_color: tuple[int, int, int],
+        wall_color = tuple[int, int, int]
     ):
         self.window_width, self.window_height = res[0], res[1]
         self.__grid = grid
         self.__surface = surface
         self.clock = clock
         self.fps = fps
-        self.background_color = color
+        self.background_color = bg_color
+        self.wall_color = wall_color
         self.initialize_objects()
 
     def initialize_objects(self):
@@ -52,6 +54,7 @@ class Simulation:
         )
         client = Client(client_img, 3, 3)
         self.__grid.set_cell(3, 3, CellType.CLIENT, client)
+        self.__grid.set_cell(4,4, CellType.WALL, None)
 
     def draw_grid(self):
         grid_size = self.__grid.get_grid_size()
@@ -59,7 +62,7 @@ class Simulation:
             for col in range(0, self.window_width, self.window_width // grid_size):
                 pygame.draw.rect(
                     self.__surface,
-                    "brown",
+                    self.wall_color,
                     (
                         row,
                         col,
@@ -81,6 +84,9 @@ class Simulation:
                     self.__surface.blit(
                         image, (column_idx * cell_size, row_idx * cell_size)
                     )
+                elif cell.type == CellType.WALL:
+                    wall_rect = pygame.Rect(column_idx * cell_size, row_idx * cell_size, cell_size, cell_size)
+                    pygame.draw.rect(self.__surface, self.wall_color, wall_rect) 
 
     def update_state(self):  # zaimplementować
         pass

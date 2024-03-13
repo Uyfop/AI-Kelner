@@ -5,7 +5,8 @@ HEIGHT = 800
 WIDTH = 800
 CELL_COUNT = 10
 FPS = 60
-COLOR = (218, 198, 169)
+BACKGROUND_COLOR = (218, 198, 169)
+WALL_COLOR = (102, 51, 0)
 
 
 def main():
@@ -17,7 +18,7 @@ def main():
     clock = pygame.time.Clock()
 
     grid = Grid(CELL_COUNT)
-    sim = Simulation(grid, surface, clock, FPS, (HEIGHT, WIDTH), COLOR)
+    sim = Simulation(grid, surface, clock, FPS, (HEIGHT, WIDTH), BACKGROUND_COLOR, WALL_COLOR)
 
     while running:
         for event in pygame.event.get():
