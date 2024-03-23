@@ -44,7 +44,7 @@ class Simulation:
         client_images = [
             os.path.join(client_folder, filename)
             for filename in os.listdir(client_folder)
-            if filename.endswith((".png"))
+            if filename.endswith(".png")
         ]
         random_client_image_path = random.choice(client_images)
 
