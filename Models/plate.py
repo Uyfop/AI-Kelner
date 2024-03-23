@@ -17,3 +17,4 @@ class Plate:
 
     def get_status(self):
         return self.status
+

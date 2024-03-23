@@ -28,3 +28,4 @@ class Waiter:
 
     def get_status(self):
         return self.status
+
