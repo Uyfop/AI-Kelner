@@ -16,3 +16,16 @@ class Waiter:
     def change_status(self, new_status):
         if new_status in WaiterStatus:
             self.status = new_status
+
+    def get_img(self):
+        return self._img
+
+    def get_pos(self):
+        return self.pos
+
+    def set_pos(self, x: int, y: int):
+        self.pos = {"x": x, "y": y}
+
+    def get_status(self):
+        return self.status
+

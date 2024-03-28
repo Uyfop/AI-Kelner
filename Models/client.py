@@ -6,6 +6,7 @@ class ClientStatus(Enum):
     WAITING = "Waiting"
     ORDERING = "Ordering"
     SERVED = "Served"
+    EATING = "Eating"
 
 
 class Client:
@@ -17,3 +18,15 @@ class Client:
     def change_status(self, new_status: ClientStatus):
         if new_status in ClientStatus:
             self.status = new_status
+
+    def get_img(self):
+        return self._img
+
+    def get_pos(self):
+        return self.pos
+
+    def set_pos(self, x: int, y: int):
+        self.pos = {"x": x, "y": y}
+
+    def get_status(self):
+        return self.status

@@ -8,6 +8,7 @@ class CellType(Enum):
     WALL = 1
     CLIENT = 2
     WAITER = 3
+    TABLE = 4
 
 
 @dataclass

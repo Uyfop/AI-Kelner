@@ -35,15 +35,16 @@ class Simulation:
             waiter_img,
             (self.window_width // grid_size, self.window_height // grid_size),
         )
-        waiter = Waiter(waiter_img, 0, 0)
-        self.__grid.set_cell(0, 0, CellType.WAITER, waiter)
+        waiter = Waiter(waiter_img, 1, 1)
+
+        self.__grid.set_cell(waiter.pos['x'], waiter.pos['y'], CellType.WAITER, waiter)
 
         client_folder_path = os.path.join("Assets", "Images", "clients")
         client_folder = client_folder_path
         client_images = [
             os.path.join(client_folder, filename)
             for filename in os.listdir(client_folder)
-            if filename.endswith((".png"))
+            if filename.endswith(".png")
         ]
         random_client_image_path = random.choice(client_images)
 
@@ -53,7 +54,7 @@ class Simulation:
             (self.window_width // grid_size, self.window_height // grid_size),
         )
         client = Client(client_img, 3, 3)
-        self.__grid.set_cell(3, 3, CellType.CLIENT, client)
+        self.__grid.set_cell(client.pos['x'], client.pos['y'], CellType.CLIENT, client)
         self.__grid.set_cell(4,4, CellType.WALL, None)
 
     def draw_grid(self):
