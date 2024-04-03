@@ -6,7 +6,6 @@ class PlateStatus(Enum):
     MEAL = "Meal"
     DIRTY = "Dirty"
 
-
 class Plate:
     def __init__(self):
         self.status = PlateStatus.CLEAN
