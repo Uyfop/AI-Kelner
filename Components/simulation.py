@@ -15,7 +15,7 @@ class Simulation:
         fps: int,
         res: tuple[int, int],
         bg_color: tuple[int, int, int],
-        wall_color = tuple[int, int, int]
+        wall_color: tuple[int, int, int]
     ):
         self.window_width, self.window_height = res[0], res[1]
         self.__grid = grid
@@ -24,6 +24,7 @@ class Simulation:
         self.fps = fps
         self.background_color = bg_color
         self.wall_color = wall_color
+        self.waiter = None
         self.initialize_objects()
 
     def initialize_objects(self):
@@ -36,6 +37,7 @@ class Simulation:
             (self.window_width // grid_size, self.window_height // grid_size),
         )
         waiter = Waiter(waiter_img, 1, 1)
+        self.waiter = waiter
 
         self.__grid.set_cell(waiter.pos['x'], waiter.pos['y'], CellType.WAITER, waiter)
 
@@ -89,8 +91,59 @@ class Simulation:
                     wall_rect = pygame.Rect(column_idx * cell_size, row_idx * cell_size, cell_size, cell_size)
                     pygame.draw.rect(self.__surface, self.wall_color, wall_rect) 
 
-    def update_state(self):  # zaimplementować
-        pass
+    def update_state(self):
+        grid_size = self.__grid.get_grid_size()
+        current_position = (self.waiter.pos['x'], self.waiter.pos['y'])
+        available_positions = []
+
+        for x in range(grid_size):
+            for y in range(grid_size):
+                if self.__grid.get_cell(x, y).type == CellType.EMPTY:
+                    available_positions.append((x, y))
+
+        if available_positions:
+            target_position = random.choice(available_positions)
+            direction = (target_position[0] - current_position[0], target_position[1] - current_position[1])
+
+            self.move_waiter(direction)
+
+    def move_waiter(self, direction):
+        current_x = self.waiter.pos['x']
+        current_y = self.waiter.pos['y']
+
+        target_x = current_x + direction[0]
+        target_y = current_y + direction[1]
+
+        self.__grid.set_cell(current_x, current_y, CellType.EMPTY, None)
+
+        steps = max(abs(target_x - current_x), abs(target_y - current_y))
+
+        for _ in range(steps):
+            current_x += direction[0] / steps
+            current_y += direction[1] / steps
+
+            int_x = int(round(current_x))
+            int_y = int(round(current_y))
+
+            if self.__grid.get_cell(int_x, int_y).type != CellType.EMPTY:
+                current_x = self.waiter.pos['x']
+                current_y = self.waiter.pos['y']
+                self.__grid.set_cell(current_x , current_y, CellType.WAITER, self.waiter)
+                return 
+            
+            self.waiter.pos['x'] = int_x
+            self.waiter.pos['y'] = int_y
+            self.__grid.set_cell(int_x, int_y, CellType.WAITER, self.waiter)
+
+            self.update_screen()
+            pygame.time.delay(100)
+            self.__grid.set_cell(int_x, int_y, CellType.EMPTY, None)
+
+        self.waiter.pos['x'] = target_x
+        self.waiter.pos['y'] = target_y
+
+        self.__grid.set_cell(target_x, target_y, CellType.WAITER, self.waiter)
+        pygame.time.delay(500)
 
     def update_screen(self):
         self.__surface.fill(self.background_color)
