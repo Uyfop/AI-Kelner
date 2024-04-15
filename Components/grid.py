@@ -22,3 +22,14 @@ class Grid:
 
     def get_grid_size(self) -> int:
         return self.__grid_size
+
+    def bfs(self, start, goal):
+        # bfs state search, keep track of the direction when looking at moves
+        ...
+
+    def _is_movable(self, x: int, y: int):
+        ...
+    
+    def move_waiter_forward(self, waiter: Waiter):
+        # use waiter.direction
+        ...

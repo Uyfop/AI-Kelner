@@ -3,7 +3,7 @@ import random
 import pygame
 
 from Components import Grid, CellType
-from Models import Waiter, Client
+from Models import Waiter, Client, Direction
 
 
 class Simulation:
@@ -36,8 +36,7 @@ class Simulation:
             waiter_img,
             (self.window_width // grid_size, self.window_height // grid_size),
         )
-        waiter = Waiter(waiter_img, 1, 1)
-        self.waiter = waiter
+        waiter = Waiter(waiter_img, 1, 1, Direction.NORTH, self.__grid)
 
         self.__grid.set_cell(waiter.pos['x'], waiter.pos['y'], CellType.WAITER, waiter)
 
