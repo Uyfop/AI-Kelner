@@ -1,5 +1,5 @@
 from Components import Cell, CellType
-from Models import Client, Waiter
+from Models import Client, Waiter, Table, Kitchen
 
 
 class Grid:
@@ -10,7 +10,7 @@ class Grid:
         ]
 
     def set_cell(
-        self, row: int, col: int, cell_type: CellType, data: None | Waiter | Client
+        self, row: int, col: int, cell_type: CellType, data: None | Waiter | Client | Table | Kitchen
     ):
         self.__grid[row][col] = Cell(cell_type, data)
 

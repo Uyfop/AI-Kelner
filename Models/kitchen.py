@@ -1,4 +1,5 @@
 from enum import Enum
+import pygame
 
 
 class KitchenStatus(Enum):
@@ -7,7 +8,8 @@ class KitchenStatus(Enum):
 
 class Kitchen:
 
-    def __init__(self, x: int, y: int):
+    def __init__(self, img: pygame.Surface,  x: int, y: int):
+        self._img = img
         self.status = KitchenStatus.WAITING
         self.pos = {"x": x, "y": y}
 
@@ -22,3 +24,5 @@ class Kitchen:
         if new_status in KitchenStatus:
             self.status = new_status
 
+    def get_img(self):
+        return self._img

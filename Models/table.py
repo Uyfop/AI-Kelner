@@ -1,7 +1,10 @@
-import plate
-import client
+import pygame
+
+from Models.plate import Plate
+
 class Table:
-    def __init__(self, x: int, y: int, number: int, plate: plate.Plate):
+    def __init__(self, img: pygame.Surface, x: int, y: int, number: int, plate: Plate):
+        self._img = img
         self.x = x
         self.y = y
         self.number = number
@@ -34,4 +37,5 @@ class Table:
         self.x = x
         self.y = y
 
-
+    def get_img(self):
+        return self._img

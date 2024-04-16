@@ -1,21 +1,24 @@
 import os
 import random
+import time
 import pygame
 
 from Components import Grid, CellType
-from Models import Waiter, Client, Direction
+from Models import Waiter, Client, Direction, Kitchen
+from Models.plate import Plate
+from Models.table import Table
 
 
 class Simulation:
     def __init__(
-        self,
-        grid: Grid,
-        surface: pygame.Surface,
-        clock: pygame.time.Clock,
-        fps: int,
-        res: tuple[int, int],
-        bg_color: tuple[int, int, int],
-        wall_color: tuple[int, int, int]
+            self,
+            grid: Grid,
+            surface: pygame.Surface,
+            clock: pygame.time.Clock,
+            fps: int,
+            res: tuple[int, int],
+            bg_color: tuple[int, int, int],
+            wall_color: tuple[int, int, int]
     ):
         self.window_width, self.window_height = res[0], res[1]
         self.__grid = grid
@@ -25,6 +28,10 @@ class Simulation:
         self.background_color = bg_color
         self.wall_color = wall_color
         self.waiter = None
+        self.kitchen = None
+        self.clients = []
+        self.tables = []
+        self.last_client_spawn_time = time.time()
         self.initialize_objects()
 
     def initialize_objects(self):
@@ -39,25 +46,31 @@ class Simulation:
         waiter = Waiter(waiter_img, 1, 1, Direction.NORTH, self.__grid)
         self.waiter = waiter
 
-        self.__grid.set_cell(waiter.pos['x'], waiter.pos['y'], CellType.WAITER, waiter)
+        self.__grid.set_cell(self.waiter.pos['x'], self.waiter.pos['y'], CellType.WAITER, waiter)
 
-        client_folder_path = os.path.join("Assets", "Images", "clients")
-        client_folder = client_folder_path
-        client_images = [
-            os.path.join(client_folder, filename)
-            for filename in os.listdir(client_folder)
-            if filename.endswith(".png")
-        ]
-        random_client_image_path = random.choice(client_images)
-
-        client_img = pygame.image.load(random_client_image_path)
-        client_img = pygame.transform.scale(
-            client_img,
+        kitchen_img_path = os.path.join("Assets", "Images", "kitchen.png")
+        kitchen_img = pygame.image.load(kitchen_img_path)
+        kitchen_img = pygame.transform.scale(
+            kitchen_img,
             (self.window_width // grid_size, self.window_height // grid_size),
         )
-        client = Client(client_img, 3, 3)
-        self.__grid.set_cell(client.pos['x'], client.pos['y'], CellType.CLIENT, client)
-        self.__grid.set_cell(4,4, CellType.WALL, None)
+        self.kitchen = Kitchen(kitchen_img, 0, 0)
+        self.__grid.set_cell(self.kitchen.pos['x'], self.kitchen.pos['y'], CellType.KITCHEN, self.kitchen)
+
+        table_img_path = os.path.join("Assets", "Images", "table.png")
+        table_img = pygame.image.load(table_img_path)
+        table_img = pygame.transform.scale(
+            table_img,
+            (self.window_width // grid_size, self.window_height // grid_size),
+        )
+        x = 0
+        for i in range(2, grid_size, 4):
+            for j in range(2, grid_size, 4):
+                x += 1
+                plate = Plate()
+                table = Table(table_img, i, j, x, plate)
+                self.tables.append(table)
+                self.__grid.set_cell(i, j, CellType.TABLE, table)
 
     def draw_grid(self):
         grid_size = self.__grid.get_grid_size()
@@ -82,14 +95,11 @@ class Simulation:
 
         for row_idx, row in enumerate(grid):
             for column_idx, cell in enumerate(row):
-                if cell.type == CellType.WAITER or cell.type == CellType.CLIENT:
+                if cell.type != CellType.EMPTY:
                     image = cell.data._img
                     self.__surface.blit(
                         image, (column_idx * cell_size, row_idx * cell_size)
                     )
-                elif cell.type == CellType.WALL:
-                    wall_rect = pygame.Rect(column_idx * cell_size, row_idx * cell_size, cell_size, cell_size)
-                    pygame.draw.rect(self.__surface, self.wall_color, wall_rect) 
 
     def update_state(self):
         grid_size = self.__grid.get_grid_size()
@@ -106,6 +116,49 @@ class Simulation:
             direction = (target_position[0] - current_position[0], target_position[1] - current_position[1])
 
             self.move_waiter(direction)
+
+        current_time = time.time()
+        if current_time - self.last_client_spawn_time >= 5:  # spawn kolejnego klienta po 5 sekundach
+            if len(self.get_empty_tables()) != 0:
+                table = random.choice(self.get_empty_tables())
+                self.spawn_client(table.x, table.y, table)
+                self.last_client_spawn_time = current_time
+            else:
+                pass
+
+    def get_empty_tables(self):
+        empty_tables = []
+        grid_size = self.__grid.get_grid_size()
+        tables = self.tables
+        for x in range(grid_size):
+            for y in range(grid_size):
+                if self.__grid.get_cell(x, y).type == CellType.TABLE:
+                    for table in tables:
+                        if not table.is_occupied():
+                            empty_tables.append(table)
+
+        return empty_tables
+
+    def spawn_client(self, x, y, table):
+        client_folder_path = os.path.join("Assets", "Images", "clients")
+        client_folder = client_folder_path
+        client_images = [
+            os.path.join(client_folder, filename)
+            for filename in os.listdir(client_folder)
+            if filename.endswith(".png")
+        ]
+        random_client_image_path = random.choice(client_images)
+        client_img_path = random_client_image_path  # wybierz losowy obraz klienta
+        client_img = pygame.image.load(client_img_path)
+        client_img = pygame.transform.scale(
+            client_img,
+            (self.window_width // self.__grid.get_grid_size(), self.window_height // self.__grid.get_grid_size()),
+        )
+
+        client = Client(client_img, x - 1, y)
+        self.clients.append(client)
+        self.__grid.set_cell(x - 1, y, CellType.CLIENT, client)
+        table.occupy()
 
     def move_waiter(self, direction):
         current_x = self.waiter.pos['x']
@@ -128,9 +181,9 @@ class Simulation:
             if self.__grid.get_cell(int_x, int_y).type != CellType.EMPTY:
                 current_x = self.waiter.pos['x']
                 current_y = self.waiter.pos['y']
-                self.__grid.set_cell(current_x , current_y, CellType.WAITER, self.waiter)
-                return 
-            
+                self.__grid.set_cell(current_x, current_y, CellType.WAITER, self.waiter)
+                return
+
             self.waiter.pos['x'] = int_x
             self.waiter.pos['y'] = int_y
             self.__grid.set_cell(int_x, int_y, CellType.WAITER, self.waiter)
@@ -143,7 +196,7 @@ class Simulation:
         self.waiter.pos['y'] = target_y
 
         self.__grid.set_cell(target_x, target_y, CellType.WAITER, self.waiter)
-        pygame.time.delay(500)
+        pygame.time.delay(1000)
 
     def update_screen(self):
         self.__surface.fill(self.background_color)
