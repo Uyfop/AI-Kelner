@@ -37,6 +37,7 @@ class Simulation:
             (self.window_width // grid_size, self.window_height // grid_size),
         )
         waiter = Waiter(waiter_img, 1, 1, Direction.NORTH, self.__grid)
+        self.waiter = waiter
 
         self.__grid.set_cell(waiter.pos['x'], waiter.pos['y'], CellType.WAITER, waiter)
 
