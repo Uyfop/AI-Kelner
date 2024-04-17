@@ -15,6 +15,7 @@ class Waiter:
         self.pos = {"x": x, "y": y}
         self.status = WaiterStatus.IDLE
         self.direction = direction
+        self.grid = grid
 
     def rotate_left(self):
         self.direction = self.direction.left
@@ -23,7 +24,7 @@ class Waiter:
         self.direction = self.direction.right
 
     def try_move_forward(self):
-        self.grid.move_waiter_forward(self, self.direction)
+        self.grid.move_waiter_forward(self)
 
     def change_status(self, new_status):
         if new_status in WaiterStatus:

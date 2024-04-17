@@ -43,7 +43,7 @@ class Simulation:
             waiter_img,
             (self.window_width // grid_size, self.window_height // grid_size),
         )
-        waiter = Waiter(waiter_img, 1, 1, Direction.EAST, self.__grid)
+        waiter = Waiter(waiter_img, 1, 1, Direction.NORTH, self.__grid)
         self.waiter = waiter
 
         self.__grid.set_cell(self.waiter.pos['x'], self.waiter.pos['y'], CellType.WAITER, waiter)
@@ -106,20 +106,22 @@ class Simulation:
 
     def update_state(self):
         grid_size = self.__grid.get_grid_size()
-        current_position = (self.waiter.pos['x'], self.waiter.pos['y'])
+        current_position = (self.waiter.pos['x'], self.waiter.pos['y'], self.waiter.direction)
         available_positions = []
 
         for x in range(grid_size):
             for y in range(grid_size):
                 if self.__grid.get_cell(x, y).type == CellType.EMPTY:
-                    available_positions.append((x, y))
+                    available_positions.append((x, y, Direction.NORTH))
 
         if available_positions:
             target_position = random.choice(available_positions)
-            direction = (target_position[0] - current_position[0], target_position[1] - current_position[1])
-
-            self.move_waiter(direction)
-
+            print(f"target: {target_position[0]} {target_position[1]}")
+            path = self.__grid.bfs(current_position, target_position)
+            print(f"actions: {[action for __, action in path]}")
+            if path:
+                self.move_waiter(path)
+                pygame.time.delay(1000)
 
         current_time = time.time()
         if current_time - self.last_client_spawn_time >= 5:  # spawn kolejnego klienta po 5 sekundach
@@ -129,6 +131,23 @@ class Simulation:
                 self.last_client_spawn_time = current_time
             else:
                 pass
+    
+    def move_waiter(self, path):
+        for new_position, action in path:
+            new_x, new_y, _ = new_position
+            self.waiter.set_pos(new_x, new_y)
+            
+            self.__grid.set_cell(self.waiter.pos['y'], self.waiter.pos['x'], CellType.WAITER, self.waiter)
+            
+            self.update_screen()
+            pygame.time.delay(600)
+
+            if action == "right":
+                self.waiter.rotate_right()
+            elif action == "left":
+                self.waiter.rotate_left()
+
+            self.__grid.set_cell(new_y, new_x, CellType.EMPTY, None)
 
     def get_empty_tables(self):
         empty_tables = []
@@ -163,44 +182,6 @@ class Simulation:
         self.clients.append(client)
         self.__grid.set_cell(x - 1, y, CellType.CLIENT, client)
         table.occupy()
-
-    def move_waiter(self, direction):
-        current_x = self.waiter.pos['x']
-        current_y = self.waiter.pos['y']
-
-        target_x = current_x + direction[0]
-        target_y = current_y + direction[1]
-
-        self.__grid.set_cell(current_x, current_y, CellType.EMPTY, None)
-
-        steps = max(abs(target_x - current_x), abs(target_y - current_y))
-
-        for _ in range(steps):
-            current_x += direction[0] / steps
-            current_y += direction[1] / steps
-
-            int_x = int(round(current_x))
-            int_y = int(round(current_y))
-
-            if self.__grid.get_cell(int_x, int_y).type != CellType.EMPTY:
-                current_x = self.waiter.pos['x']
-                current_y = self.waiter.pos['y']
-                self.__grid.set_cell(current_x, current_y, CellType.WAITER, self.waiter)
-                return
-
-            self.waiter.pos['x'] = int_x
-            self.waiter.pos['y'] = int_y
-            self.__grid.set_cell(int_x, int_y, CellType.WAITER, self.waiter)
-
-            self.update_screen()
-            pygame.time.delay(100)
-            self.__grid.set_cell(int_x, int_y, CellType.EMPTY, None)
-
-        self.waiter.pos['x'] = target_x
-        self.waiter.pos['y'] = target_y
-
-        self.__grid.set_cell(target_x, target_y, CellType.WAITER, self.waiter)
-        pygame.time.delay(1000)
 
     def update_screen(self):
         self.__surface.fill(self.background_color)
