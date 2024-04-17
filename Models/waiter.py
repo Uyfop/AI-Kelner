@@ -1,11 +1,13 @@
 from enum import Enum
 import pygame
 from typing import Any
+from .direction import Direction
 
 
 class WaiterStatus(Enum):
-    IDLE = ("Idle",)
+    IDLE = "Idle"
     BUSY = "Busy"
+
 
 class Waiter:
     def __init__(self, img: pygame.Surface, x: int, y: int, direction, grid: Any):
@@ -15,10 +17,10 @@ class Waiter:
         self.direction = direction
 
     def rotate_left(self):
-        ...
+        self.direction = self.direction.left
 
     def rotate_right(self):
-        ...
+        self.direction = self.direction.right
 
     def try_move_forward(self):
         self.grid.move_waiter_forward(self, self.direction)
@@ -39,3 +41,16 @@ class Waiter:
     def get_status(self):
         return self.status
 
+    def rotate_image(self):
+        angle = 0
+        if self.direction == Direction.NORTH:
+            angle = 0
+        elif self.direction == Direction.EAST:
+            angle = 270
+        elif self.direction == Direction.SOUTH:
+            angle = 180
+        elif self.direction == Direction.WEST:
+            angle = 90
+
+        rotated_image = pygame.transform.rotate(self._img, angle)
+        return rotated_image

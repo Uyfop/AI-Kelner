@@ -43,7 +43,7 @@ class Simulation:
             waiter_img,
             (self.window_width // grid_size, self.window_height // grid_size),
         )
-        waiter = Waiter(waiter_img, 1, 1, Direction.NORTH, self.__grid)
+        waiter = Waiter(waiter_img, 1, 1, Direction.EAST, self.__grid)
         self.waiter = waiter
 
         self.__grid.set_cell(self.waiter.pos['x'], self.waiter.pos['y'], CellType.WAITER, waiter)
@@ -96,10 +96,13 @@ class Simulation:
         for row_idx, row in enumerate(grid):
             for column_idx, cell in enumerate(row):
                 if cell.type != CellType.EMPTY:
-                    image = cell.data._img
-                    self.__surface.blit(
-                        image, (column_idx * cell_size, row_idx * cell_size)
-                    )
+                    if isinstance(cell.data, Waiter):
+                        waiter = cell.data
+                        rotated_image = waiter.rotate_image()
+                        self.__surface.blit(rotated_image, (column_idx * cell_size, row_idx * cell_size))
+                    else:
+                        image = cell.data.get_img()
+                        self.__surface.blit(image, (column_idx * cell_size, row_idx * cell_size))
 
     def update_state(self):
         grid_size = self.__grid.get_grid_size()
@@ -116,6 +119,7 @@ class Simulation:
             direction = (target_position[0] - current_position[0], target_position[1] - current_position[1])
 
             self.move_waiter(direction)
+
 
         current_time = time.time()
         if current_time - self.last_client_spawn_time >= 5:  # spawn kolejnego klienta po 5 sekundach

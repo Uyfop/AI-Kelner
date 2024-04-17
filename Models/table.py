@@ -2,6 +2,7 @@ import pygame
 
 from Models.plate import Plate
 
+
 class Table:
     def __init__(self, img: pygame.Surface, x: int, y: int, number: int, plate: Plate):
         self._img = img
@@ -20,10 +21,13 @@ class Table:
 
     def is_occupied(self):
         return self.occupied
+
     def served(self):
         self.served = True
+
     def finished_eating(self):
         self.served = False
+
     def is_served(self):
         return self.served
 
