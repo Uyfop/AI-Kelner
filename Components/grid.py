@@ -67,30 +67,27 @@ class Grid:
 
     def astar(self, start, goal):
         grid_size = self.__grid_size
-        open_set = PriorityQueue()
-        open_set.put(start, 0)
+        queue = PriorityQueue()
+        queue.put(start, 0)
         came_from = {}
         g_score = {(x, y): float('inf') for x in range(grid_size) for y in range(grid_size)}
         f_score = {(x, y): float('inf') for x in range(grid_size) for y in range(grid_size)}
         g_score[start] = 0
         f_score[start] = self.heuristic(start, goal)
 
-        while not open_set.empty():
-            current = open_set.get()
+        while not queue.empty():
+            current = queue.get()
 
             if current == goal:
-                return self._build_path(came_from, current)
-
+                return self._build_path(current)
 
             for successor, action, cost in self.succ(current):
-                successor_without_direction = (successor[0], successor[1])
-                tentative_g_score = cost + g_score[current]
-                if tentative_g_score < g_score.get(successor_without_direction, float('inf')):
-                    came_from[successor] = current
-                    g_score[successor_without_direction] = tentative_g_score
+                tentative_g_score = g_score[current] + cost
+                if tentative_g_score < g_score.get(successor, float('inf')):
+                    came_from[successor] = (current, action)
+                    g_score[successor] = tentative_g_score
                     f_score[successor] = tentative_g_score + self.heuristic(successor, goal)
-                    if successor not in open_set.queue:
-                        open_set.put(successor, f_score[successor])
+                    queue.put(successor, f_score[successor])
         return None
 
     def heuristic(self, node, goal):
