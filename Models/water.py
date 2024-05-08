@@ -13,7 +13,6 @@ class Water:
         self.x = x
         self.y = y
 
-
     def get_img(self):
         return self._img
 

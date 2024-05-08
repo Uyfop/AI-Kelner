@@ -18,8 +18,6 @@ class CellType(Enum):
     BANANA = 8
 
 
-
-
 @dataclass
 class Cell:
     type: CellType

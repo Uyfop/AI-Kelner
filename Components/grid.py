@@ -1,6 +1,5 @@
 from collections import deque
-from queue import PriorityQueue
-
+from Components.priority_queue import PriorityQueue
 from Components import Cell, CellType
 from Models import Client, Waiter, Table, Kitchen
 from Models.broken import Broken
@@ -38,10 +37,10 @@ class Grid:
         dx, dy = direction.value
 
         if self._is_movable(x + dx, y + dy):
-            successors.append(((x + dx, y + dy, direction), "forward", self.cost((x + dx, y + dy))))
+            successors.append((Node((x + dx, y + dy, direction)), "forward", self.cost((x + dx, y + dy))))
 
-        successors.append(((x, y, direction.right), "right", 1))
-        successors.append(((x, y, direction.left), "left", 1))
+        successors.append((Node((x, y, direction.right)), "right", 1))
+        successors.append((Node((x, y, direction.left)), "left", 1))
 
         return successors
 
@@ -66,28 +65,26 @@ class Grid:
         return None
 
     def astar(self, start, goal):
-        grid_size = self.__grid_size
         queue = PriorityQueue()
-        queue.put(start, 0)
-        came_from = {}
-        g_score = {(x, y): float('inf') for x in range(grid_size) for y in range(grid_size)}
-        f_score = {(x, y): float('inf') for x in range(grid_size) for y in range(grid_size)}
-        g_score[start] = 0
-        f_score[start] = self.heuristic(start, goal)
+        queue.push(0, Node(start))
+        visited = set()
 
-        while not queue.empty():
-            current = queue.get()
+        while queue:
+            _, elem = queue.pop()
 
-            if current == goal:
-                return self._build_path(current)
+            if elem.state == goal:
+                return self._build_path(elem)
 
-            for successor, action, cost in self.succ(current):
-                tentative_g_score = g_score[current] + cost
-                if tentative_g_score < g_score.get(successor, float('inf')):
-                    came_from[successor] = (current, action)
-                    g_score[successor] = tentative_g_score
-                    f_score[successor] = tentative_g_score + self.heuristic(successor, goal)
-                    queue.put(successor, f_score[successor])
+            if elem.state not in visited:
+                visited.add(elem.state)
+
+                for successor, action, cost in self.succ(elem.state):
+                    g_value = cost
+                    h_value = self.heuristic(elem.state, goal)
+                    new_node = Node(successor, elem, action)
+
+                    queue.push(g_value + h_value, new_node)
+
         return None
 
     def heuristic(self, node, goal):
