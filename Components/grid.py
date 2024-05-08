@@ -1,6 +1,7 @@
 from collections import deque
 from Components.priority_queue import PriorityQueue
 from Components import Cell, CellType
+from Components.priority_queue import PriorityQueue
 from Models import Client, Waiter, Table, Kitchen
 from Models.broken import Broken
 from Models.water import Water

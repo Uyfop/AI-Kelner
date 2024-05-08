@@ -1,7 +1,6 @@
 import heapq
 from Models.node import Node
 
-
 class PriorityQueue:
     def __init__(self) -> None:
         self.li: list[tuple[int, Node]] = []
@@ -14,3 +13,4 @@ class PriorityQueue:
 
     def pop(self) -> tuple[int, Node]:
         return heapq.heappop(self.li)
+
