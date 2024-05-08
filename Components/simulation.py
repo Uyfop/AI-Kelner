@@ -170,26 +170,23 @@ class Simulation:
             target_position = random.choice(available_positions)
             print(f"target: {target_position[0]} {target_position[1]}")
             path = self.__grid.bfs(current_position, target_position)
-            print(f"actions: {[action for __, action in path]}")
+            print(f"actions: {[action for action in path]}")
             if path:
                 self.move_waiter(path)
-                pygame.time.delay(1000)
 
     def move_waiter(self, path):
-        for new_position, action in path:
-            new_x, new_y, _ = new_position
-            self.waiter.set_pos(new_x, new_y)
-            self.__grid.set_cell(self.waiter.pos['y'], self.waiter.pos['x'], CellType.WAITER, self.waiter)
 
+        for action in path:
             self.update_screen()
             pygame.time.delay(600)
-
-            if action == "right":
+            if action == "forward":
+                x, y = self.waiter.get_pos()['x'], self.waiter.get_pos()['y']
+                self.__grid.set_cell(x, y, CellType.EMPTY, None) 
+                self.waiter.try_move_forward()
+            elif action == "right":
                 self.waiter.rotate_right()
             elif action == "left":
                 self.waiter.rotate_left()
-
-            self.__grid.set_cell(new_y, new_x, CellType.EMPTY, None)
 
 
     def get_empty_tables(self):

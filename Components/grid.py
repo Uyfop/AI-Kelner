@@ -32,32 +32,14 @@ class Grid:
         successors = []
         x, y, direction = current
 
-        if direction == Direction.NORTH and self._is_movable(x, y - 1):
-            successors.append(((x, y - 1, direction), "forward"))
-        if direction == Direction.SOUTH and self._is_movable(x, y + 1):
-            successors.append(((x, y + 1, direction), "forward"))
-        if direction == Direction.WEST and self._is_movable(x - 1, y):
-            successors.append(((x - 1, y, direction), "forward"))
-        if direction == Direction.EAST and self._is_movable(x + 1, y):
-            successors.append(((x + 1, y, direction), "forward"))
+        dx, dy = direction.value
 
-        if direction == Direction.NORTH:
-            successors.append(((x, y, Direction.NORTH.right), "right"))
-        elif direction == Direction.EAST:
-            successors.append(((x, y, Direction.EAST.right), "right"))
-        elif direction == Direction.SOUTH:
-            successors.append(((x, y, Direction.SOUTH.right), "right"))
-        elif direction == Direction.WEST:
-            successors.append(((x, y, Direction.WEST.right), "right"))
+        if self._is_movable(x + dx, y + dy):
+            successors.append(((x + dx, y + dy, direction), "forward"))
 
-        if direction == Direction.NORTH:
-            successors.append(((x, y, Direction.NORTH.left), "left"))
-        elif direction == Direction.WEST:
-            successors.append(((x, y, Direction.WEST.left), "left"))
-        elif direction == Direction.SOUTH:
-            successors.append(((x, y, Direction.SOUTH.left), "left"))
-        elif direction == Direction.EAST:
-            successors.append(((x, y, Direction.EAST.left), "left"))
+        successors.append(((x, y, direction.right), "right"))
+        successors.append(((x, y, direction.left), "left"))
+
 
         return successors
 
@@ -76,10 +58,8 @@ class Grid:
             visited.add(current)
 
             for successor, action in self.succ(current):
-                new_position = successor
-                new_path = path + [(current, action)]
-                queue.append((new_position, new_path))
-
+                new_path = path + [action]
+                queue.append((successor, new_path))
 
         return None
 
@@ -90,14 +70,8 @@ class Grid:
         return False
     def move_waiter_forward(self, waiter: Waiter):
         x, y = waiter.get_pos()['x'], waiter.get_pos()['y']
-        new_x, new_y = x, y
-        
-        if waiter.direction == Direction.NORTH:
-            new_y = y - 1
-        elif waiter.direction == Direction.SOUTH:
-            new_y = y + 1
-        elif waiter.direction == Direction.WEST:
-            new_x = x - 1
-        elif waiter.direction == Direction.EAST:
-            new_x = x + 1
+        dx, dy = waiter.direction.value
+        new_x, new_y = x + dx, y + dy
+
         waiter.set_pos(new_x, new_y)
+        self.set_cell(new_x, new_y, CellType.WAITER, waiter)
