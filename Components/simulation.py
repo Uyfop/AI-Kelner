@@ -172,7 +172,7 @@ class Simulation:
         if available_positions:
             target_position = random.choice(available_positions)
             print(f"target: {target_position[0]} {target_position[1]}")
-            path = self.__grid.bfs(current_position, target_position)
+            path = self.__grid.astar(current_position, target_position)
             print(f"actions: {[action for action in path]}")
             if path:
                 self.move_waiter(path)

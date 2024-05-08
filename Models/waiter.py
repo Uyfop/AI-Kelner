@@ -16,6 +16,7 @@ class Waiter:
         self.status = WaiterStatus.IDLE
         self.direction = direction
         self.grid = grid
+        self.cost = 'inf'
 
     def rotate_left(self):
         self.direction = self.direction.left
@@ -55,3 +56,6 @@ class Waiter:
 
         rotated_image = pygame.transform.rotate(self._img, angle)
         return rotated_image
+
+    def get_cost(self):
+        return self.cost

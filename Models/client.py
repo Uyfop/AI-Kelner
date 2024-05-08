@@ -14,6 +14,7 @@ class Client:
         self._img = img
         self.pos = {"x": x, "y": y}
         self.status = ClientStatus.WAITING
+        self.cost = 'inf'
 
     def change_status(self, new_status: ClientStatus):
         if new_status in ClientStatus:
@@ -30,3 +31,6 @@ class Client:
 
     def get_status(self):
         return self.status
+
+    def get_cost(self):
+        return self.cost

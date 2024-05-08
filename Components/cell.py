@@ -27,9 +27,7 @@ class Cell:
     cost: int = field(default=1, init=False)
 
     def __post_init__(self):
-        if self.type == CellType.WATER:
-            self.cost = 100
-        elif self.type == CellType.BROKEN:
-            self.cost = 10
+        if self.data:
+            self.cost = self.data.get_cost()
         else:
             self.cost = 1

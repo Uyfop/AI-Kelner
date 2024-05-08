@@ -12,6 +12,7 @@ class Table:
         self.occupied = False
         self.served = False
         self.plate = plate
+        self.cost = 'inf'
 
     def occupy(self):
         self.occupied = True
@@ -44,4 +45,6 @@ class Table:
     def get_img(self):
         return self._img
 
+    def get_cost(self):
+        return self.cost
 

@@ -5,6 +5,7 @@ class Broken():
     def __init__(self, img: pygame.Surface, x: int, y: int):
         self._img = img
         self.pos = {"x": x, "y": y}
+        self.cost = 'inf'
 
 
     def set_pos(self, x: int, y: int):
@@ -14,3 +15,6 @@ class Broken():
 
     def get_img(self):
         return self._img
+
+    def get_cost(self):
+        return self.cost

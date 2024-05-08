@@ -12,6 +12,7 @@ class Kitchen:
         self._img = img
         self.status = KitchenStatus.WAITING
         self.pos = {"x": x, "y": y}
+        self.cost = 'inf'
 
     def set_pos(self, x: int, y: int):
         self.x = x
@@ -26,3 +27,6 @@ class Kitchen:
 
     def get_img(self):
         return self._img
+
+    def get_cost(self):
+        return self.cost
