@@ -83,6 +83,29 @@ class Simulation:
         self.waters.append(water)
         self.__grid.set_cell(0, 10, CellType.WATER, water)
 
+        water = Water(water_img, 0, 1)
+        self.waters.append(water)
+        self.__grid.set_cell(0, 1, CellType.WATER, water)
+
+        water = Water(water_img, 0, 2)
+        self.waters.append(water)
+        self.__grid.set_cell(0, 2, CellType.WATER, water)
+
+        water = Water(water_img, 0, 3)
+        self.waters.append(water)
+        self.__grid.set_cell(0, 3, CellType.WATER, water)
+
+        water = Water(water_img, 1, 3)
+        self.waters.append(water)
+        self.__grid.set_cell(1, 3, CellType.WATER, water)
+
+        water = Water(water_img, 3, 1)
+        self.waters.append(water)
+        self.__grid.set_cell(3, 1, CellType.WATER, water)
+
+
+
+
         broken_img_path = os.path.join("Assets", "Images", "brokenfloor.png")
         broken_img = pygame.image.load(broken_img_path)
         broken_img = pygame.transform.scale(
@@ -104,6 +127,10 @@ class Simulation:
         broken = Broken(broken_img, 7, 10)
         self.brokentiles.append(broken)
         self.__grid.set_cell(8, 8, CellType.BROKEN, broken)
+
+        broken = Broken(broken_img, 2, 0)
+        self.brokentiles.append(broken)
+        self.__grid.set_cell(2, 0, CellType.BROKEN, broken)
 
         table_img_path = os.path.join("Assets", "Images", "table.png")
         table_img = pygame.image.load(table_img_path)
@@ -259,7 +286,7 @@ class Simulation:
                 elif self.__grid.get_cell(x, y).type == CellType.BANANA:
                     bananas_on_grid += 1
 
-        for _ in range(5 - bananas_on_grid):
+        for _ in range(20 - bananas_on_grid):
             x, y = random.choice(empty_squares)
             banana = Banana(banana_img, x, y)
 
