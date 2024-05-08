@@ -15,6 +15,7 @@ class CellType(Enum):
     KITCHEN = 5
     WATER = 6
     BROKEN = 7
+    BANANA = 8
 
 
 

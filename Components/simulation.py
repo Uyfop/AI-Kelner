@@ -1,5 +1,7 @@
 import os
 import random
+import time
+
 import pygame
 
 from Components import Grid, CellType
@@ -8,6 +10,7 @@ from Models.broken import Broken
 from Models.plate import Plate
 from Models.table import Table
 from Models.water import Water
+from Models.banana import Banana
 
 
 class Simulation:
@@ -39,7 +42,6 @@ class Simulation:
         self.move_delay = move_delay
         self.initialize_objects()
 
-
     def initialize_objects(self):
         grid_size = self.__grid.get_grid_size()
 
@@ -63,7 +65,6 @@ class Simulation:
         self.kitchen = Kitchen(kitchen_img, 0, 0)
         self.__grid.set_cell(self.kitchen.pos['x'], self.kitchen.pos['y'], CellType.KITCHEN, self.kitchen)
 
-
         water_img_path = os.path.join("Assets", "Images", "water.png")
         water_img = pygame.image.load(water_img_path)
         water_img = pygame.transform.scale(
@@ -81,7 +82,6 @@ class Simulation:
         water = Water(water_img, 0, 10)
         self.waters.append(water)
         self.__grid.set_cell(0, 10, CellType.WATER, water)
-
 
         broken_img_path = os.path.join("Assets", "Images", "brokenfloor.png")
         broken_img = pygame.image.load(broken_img_path)
@@ -111,7 +111,6 @@ class Simulation:
             table_img,
             (self.window_width // grid_size, self.window_height // grid_size),
         )
-
 
         x = 0
         for i in range(2, grid_size, 4):
@@ -164,6 +163,7 @@ class Simulation:
         else:
             pass
 
+        self.spawn_banana()
         for x in range(grid_size):
             for y in range(grid_size):
                 if self.__grid.get_cell(x, y).type == CellType.EMPTY:
@@ -186,14 +186,13 @@ class Simulation:
             self.update_screen()
             if action == "forward":
                 x, y = self.waiter.get_pos()['x'], self.waiter.get_pos()['y']
-                self.__grid.set_cell(x, y, CellType.EMPTY, None) 
+                self.__grid.set_cell(x, y, CellType.EMPTY, None)
                 self.waiter.try_move_forward()
             elif action == "right":
                 self.waiter.rotate_right()
             elif action == "left":
                 self.waiter.rotate_left()
             self.next_move = current_time + self.move_delay
-
 
     def get_empty_tables(self):
         empty_tables = []
@@ -237,4 +236,44 @@ class Simulation:
 
     def update(self):
         self.update_state()
+        self.despawn_bananas()
         self.update_screen()
+
+    def spawn_banana(self):
+        grid_size = self.__grid.get_grid_size()
+        banana_img_path = os.path.join("Assets", "Images", "banana.jpg")
+        banana_img = pygame.image.load(banana_img_path)
+        banana_img = pygame.transform.scale(
+            banana_img,
+            (self.window_width // grid_size, self.window_height // grid_size),
+        )
+
+        empty_squares = []
+        bananas_on_grid = 0
+        for x in range(grid_size):
+            for y in range(grid_size):
+                if x + 1 < 20 and self.__grid.get_cell(x + 1, y).type == CellType.TABLE:
+                    continue
+                if self.__grid.get_cell(x, y).type == CellType.EMPTY:
+                    empty_squares.append((x, y))
+                elif self.__grid.get_cell(x, y).type == CellType.BANANA:
+                    bananas_on_grid += 1
+
+        for _ in range(5 - bananas_on_grid):
+            x, y = random.choice(empty_squares)
+            banana = Banana(banana_img, x, y)
+
+            self.__grid.set_cell(x, y, CellType.BANANA, banana)
+            empty_squares.remove((x, y))
+
+    def despawn_bananas(self):
+        current_time = time.time()
+        despawn_time = 20
+
+        for x in range(self.__grid.get_grid_size()):
+            for y in range(self.__grid.get_grid_size()):
+                cell = self.__grid.get_cell(x, y)
+                if cell.type == CellType.BANANA:
+                    banana = cell.data
+                    if current_time - banana.timestamp >= despawn_time:
+                        self.__grid.set_cell(x, y, CellType.EMPTY, None)

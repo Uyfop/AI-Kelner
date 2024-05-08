@@ -4,6 +4,7 @@ from Models import Client, Waiter, Table, Kitchen
 from Models.broken import Broken
 from Models.water import Water
 from Models.node import Node
+from Models.banana import Banana
 
 class Grid:
     def __init__(self, size: int):
@@ -13,7 +14,7 @@ class Grid:
         ]
 
     def set_cell(
-        self, row: int, col: int, cell_type: CellType, data: None | Waiter | Client | Table | Kitchen | Water | Broken
+        self, row: int, col: int, cell_type: CellType, data: None | Waiter | Client | Table | Kitchen | Water | Broken | Banana
     ):
         self.__grid[row][col] = Cell(cell_type, data)
 
