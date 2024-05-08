@@ -1,5 +1,6 @@
 from collections import deque
 from Components import Cell, CellType
+from Components.priority_queue import PriorityQueue
 from Models import Client, Waiter, Table, Kitchen
 from Models.broken import Broken
 from Models.water import Water
@@ -61,6 +62,15 @@ class Grid:
                 queue.append(Node(successor, elem, action))
 
         return None
+
+    def a_star():
+        def g(x):
+            pass
+        def h(x):
+            pass
+
+        priority_queue = PriorityQueue()
+        pass
 
     def _build_path(self, node):
         path = []
