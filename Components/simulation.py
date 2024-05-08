@@ -19,7 +19,8 @@ class Simulation:
             fps: int,
             res: tuple[int, int],
             bg_color: tuple[int, int, int],
-            wall_color: tuple[int, int, int]
+            wall_color: tuple[int, int, int],
+            move_delay: int
     ):
         self.window_width, self.window_height = res[0], res[1]
         self.__grid = grid
@@ -34,6 +35,8 @@ class Simulation:
         self.tables = []
         self.waters = []
         self.brokentiles = []
+        self.next_move = pygame.time.get_ticks()
+        self.move_delay = move_delay
         self.initialize_objects()
 
 
@@ -175,10 +178,12 @@ class Simulation:
                 self.move_waiter(path)
 
     def move_waiter(self, path):
-
-        for action in path:
+        while path:
+            current_time = pygame.time.get_ticks()
+            if current_time <= self.next_move:
+                continue
+            action = path.pop(0)
             self.update_screen()
-            pygame.time.delay(600)
             if action == "forward":
                 x, y = self.waiter.get_pos()['x'], self.waiter.get_pos()['y']
                 self.__grid.set_cell(x, y, CellType.EMPTY, None) 
@@ -187,6 +192,7 @@ class Simulation:
                 self.waiter.rotate_right()
             elif action == "left":
                 self.waiter.rotate_left()
+            self.next_move = current_time + self.move_delay
 
 
     def get_empty_tables(self):

@@ -2,9 +2,8 @@ from collections import deque
 from Components import Cell, CellType
 from Models import Client, Waiter, Table, Kitchen
 from Models.broken import Broken
-from Models.direction import Direction
 from Models.water import Water
-
+from Models.node import Node
 
 class Grid:
     def __init__(self, size: int):
@@ -45,24 +44,31 @@ class Grid:
 
     def bfs(self, start, goal):
         visited = set()
-        queue = deque([(start, [])])
+        queue = deque([Node(start)])
 
         while queue:
-            current, path = queue.popleft()
-            if current == goal:
-                return path
+            elem = queue.popleft()
+            
+            if elem.state == goal:
+                return self._build_path(elem)
 
-            if current in visited:
+            if elem.state in visited:
                 continue
+                
+            visited.add(elem.state)
 
-            visited.add(current)
-
-            for successor, action in self.succ(current):
-                new_path = path + [action]
-                queue.append((successor, new_path))
+            for successor, action in self.succ(elem.state):
+                queue.append(Node(successor, elem, action))
 
         return None
 
+    def _build_path(self, node):
+        path = []
+        while node:
+            if node.action:
+                path.append(node.action)
+            node = node.parent
+        return path[::-1]
 
     def _is_movable(self, x: int, y: int):
         if 0 <= x < self.__grid_size and 0 <= y < self.__grid_size:
