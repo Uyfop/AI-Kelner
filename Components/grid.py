@@ -52,11 +52,13 @@ class Grid:
             if elem.state == goal:
                 return self._build_path(elem)
 
-            if elem.state not in visited:
-                visited.add(elem.state)
+            if elem.state in visited:
+                continue
+                
+            visited.add(elem.state)
 
-                for successor, action in self.succ(elem.state):
-                    queue.append(Node(successor, elem, action))
+            for successor, action in self.succ(elem.state):
+                queue.append(Node(successor, elem, action))
 
         return None
 
