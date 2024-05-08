@@ -81,6 +81,7 @@ class Grid:
             if current == goal:
                 return self._build_path(came_from, current)
 
+
             for successor, action, cost in self.succ(current):
                 successor_without_direction = (successor[0], successor[1])
                 tentative_g_score = cost + g_score[current]
