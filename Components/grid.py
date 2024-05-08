@@ -37,10 +37,10 @@ class Grid:
         dx, dy = direction.value
 
         if self._is_movable(x + dx, y + dy):
-            successors.append((Node((x + dx, y + dy, direction)), "forward", self.cost((x + dx, y + dy))))
+            successors.append(((x + dx, y + dy, direction), "forward", self.cost((x + dx, y + dy))))
 
-        successors.append((Node((x, y, direction.right)), "right", 1))
-        successors.append((Node((x, y, direction.left)), "left", 1))
+        successors.append(((x, y, direction.right), "right", 1))
+        successors.append(((x, y, direction.left), "left", 1))
 
         return successors
 
@@ -79,6 +79,8 @@ class Grid:
                 visited.add(elem.state)
 
                 for successor, action, cost in self.succ(elem.state):
+                    if cost == 'inf':
+                        continue
                     g_value = cost
                     h_value = self.heuristic(elem.state, goal)
                     new_node = Node(successor, elem, action)
@@ -104,9 +106,7 @@ class Grid:
         return path[::-1]
 
     def _is_movable(self, x: int, y: int):
-        if 0 <= x < self.__grid_size and 0 <= y < self.__grid_size:
-            return self.__grid[x][y].type == CellType.EMPTY
-        return False
+        return 0 <= x < self.__grid_size and 0 <= y < self.__grid_size
 
     def move_waiter_forward(self, waiter: Waiter):
         x, y = waiter.get_pos()['x'], waiter.get_pos()['y']
