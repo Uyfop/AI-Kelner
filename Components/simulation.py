@@ -6,7 +6,6 @@ import pygame
 
 from Components import Grid, CellType
 from Models import Waiter, Client, Direction, Kitchen
-from Models.broken import Broken
 from Models.plate import Plate
 from Models.table import Table
 from Models.water import Water
@@ -37,7 +36,6 @@ class Simulation:
         self.clients = []
         self.tables = []
         self.waters = []
-        self.brokentiles = []
         self.next_move = pygame.time.get_ticks()
         self.move_delay = move_delay
         self.initialize_objects()
@@ -103,34 +101,15 @@ class Simulation:
         self.waters.append(water)
         self.__grid.set_cell(3, 1, CellType.WATER, water)
 
-
-
-
-        broken_img_path = os.path.join("Assets", "Images", "brokenfloor.png")
-        broken_img = pygame.image.load(broken_img_path)
-        broken_img = pygame.transform.scale(
-            broken_img,
+        banana_img_path = os.path.join("Assets", "Images", "banana.jpg")
+        banana_img = pygame.image.load(banana_img_path)
+        banana_img = pygame.transform.scale(
+            banana_img,
             (self.window_width // grid_size, self.window_height // grid_size),
         )
-        broken = Broken(broken_img, 17, 9)
-        self.brokentiles.append(broken)
-        self.__grid.set_cell(17, 9, CellType.BROKEN, broken)
-
-        broken = Broken(broken_img, 2, 15)
-        self.brokentiles.append(broken)
-        self.__grid.set_cell(2, 15, CellType.BROKEN, broken)
-
-        broken = Broken(broken_img, 19, 1)
-        self.brokentiles.append(broken)
-        self.__grid.set_cell(19, 1, CellType.BROKEN, broken)
-
-        broken = Broken(broken_img, 7, 10)
-        self.brokentiles.append(broken)
-        self.__grid.set_cell(8, 8, CellType.BROKEN, broken)
-
-        broken = Broken(broken_img, 2, 0)
-        self.brokentiles.append(broken)
-        self.__grid.set_cell(2, 0, CellType.BROKEN, broken)
+        banana = Banana(banana_img, 3, 0)
+        self.waters.append(banana)
+        self.__grid.set_cell(3, 0, CellType.BANANA, banana)
 
         table_img_path = os.path.join("Assets", "Images", "table.png")
         table_img = pygame.image.load(table_img_path)
