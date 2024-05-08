@@ -1,7 +1,9 @@
 from collections import deque
 from Components import Cell, CellType
 from Models import Client, Waiter, Table, Kitchen
+from Models.broken import Broken
 from Models.direction import Direction
+from Models.water import Water
 
 
 class Grid:
@@ -12,7 +14,7 @@ class Grid:
         ]
 
     def set_cell(
-        self, row: int, col: int, cell_type: CellType, data: None | Waiter | Client | Table | Kitchen
+        self, row: int, col: int, cell_type: CellType, data: None | Waiter | Client | Table | Kitchen | Water | Broken
     ):
         self.__grid[row][col] = Cell(cell_type, data)
 
@@ -24,6 +26,7 @@ class Grid:
 
     def get_grid_size(self) -> int:
         return self.__grid_size
+
 
     def succ(self, current):
         successors = []
@@ -65,11 +68,9 @@ class Grid:
         if 0 <= x < self.__grid_size and 0 <= y < self.__grid_size:
             return self.__grid[x][y].type == CellType.EMPTY
         return False
-    
     def move_waiter_forward(self, waiter: Waiter):
         x, y = waiter.get_pos()['x'], waiter.get_pos()['y']
         dx, dy = waiter.direction.value
-
         new_x, new_y = x + dx, y + dy
 
         waiter.set_pos(new_x, new_y)

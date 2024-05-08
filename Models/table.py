@@ -43,3 +43,5 @@ class Table:
 
     def get_img(self):
         return self._img
+
+

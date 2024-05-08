@@ -1,12 +1,13 @@
 import os
 import random
-import time
 import pygame
 
 from Components import Grid, CellType
 from Models import Waiter, Client, Direction, Kitchen
+from Models.broken import Broken
 from Models.plate import Plate
 from Models.table import Table
+from Models.water import Water
 
 
 class Simulation:
@@ -31,8 +32,10 @@ class Simulation:
         self.kitchen = None
         self.clients = []
         self.tables = []
-        self.last_client_spawn_time = time.time()
+        self.waters = []
+        self.brokentiles = []
         self.initialize_objects()
+
 
     def initialize_objects(self):
         grid_size = self.__grid.get_grid_size()
@@ -57,12 +60,56 @@ class Simulation:
         self.kitchen = Kitchen(kitchen_img, 0, 0)
         self.__grid.set_cell(self.kitchen.pos['x'], self.kitchen.pos['y'], CellType.KITCHEN, self.kitchen)
 
+
+        water_img_path = os.path.join("Assets", "Images", "water.png")
+        water_img = pygame.image.load(water_img_path)
+        water_img = pygame.transform.scale(
+            water_img,
+            (self.window_width // grid_size, self.window_height // grid_size),
+        )
+        water = Water(water_img, 10, 4)
+        self.waters.append(water)
+        self.__grid.set_cell(10, 4, CellType.WATER, water)
+
+        water = Water(water_img, 17, 17)
+        self.waters.append(water)
+        self.__grid.set_cell(17, 17, CellType.WATER, water)
+
+        water = Water(water_img, 0, 10)
+        self.waters.append(water)
+        self.__grid.set_cell(0, 10, CellType.WATER, water)
+
+
+        broken_img_path = os.path.join("Assets", "Images", "brokenfloor.png")
+        broken_img = pygame.image.load(broken_img_path)
+        broken_img = pygame.transform.scale(
+            broken_img,
+            (self.window_width // grid_size, self.window_height // grid_size),
+        )
+        broken = Broken(broken_img, 17, 9)
+        self.brokentiles.append(broken)
+        self.__grid.set_cell(17, 9, CellType.BROKEN, broken)
+
+        broken = Broken(broken_img, 2, 15)
+        self.brokentiles.append(broken)
+        self.__grid.set_cell(2, 15, CellType.BROKEN, broken)
+
+        broken = Broken(broken_img, 19, 1)
+        self.brokentiles.append(broken)
+        self.__grid.set_cell(19, 1, CellType.BROKEN, broken)
+
+        broken = Broken(broken_img, 7, 10)
+        self.brokentiles.append(broken)
+        self.__grid.set_cell(8, 8, CellType.BROKEN, broken)
+
         table_img_path = os.path.join("Assets", "Images", "table.png")
         table_img = pygame.image.load(table_img_path)
         table_img = pygame.transform.scale(
             table_img,
             (self.window_width // grid_size, self.window_height // grid_size),
         )
+
+
         x = 0
         for i in range(2, grid_size, 4):
             for j in range(2, grid_size, 4):
@@ -108,6 +155,11 @@ class Simulation:
         grid_size = self.__grid.get_grid_size()
         current_position = (self.waiter.pos['x'], self.waiter.pos['y'], self.waiter.direction)
         available_positions = []
+        if len(self.get_empty_tables()) != 0:
+            table = random.choice(self.get_empty_tables())
+            self.spawn_client(table.x, table.y, table)
+        else:
+            pass
 
         for x in range(grid_size):
             for y in range(grid_size):
@@ -122,16 +174,8 @@ class Simulation:
             if path:
                 self.move_waiter(path)
 
-        current_time = time.time()
-        if current_time - self.last_client_spawn_time >= 5:  # spawn kolejnego klienta po 5 sekundach
-            if len(self.get_empty_tables()) != 0:
-                table = random.choice(self.get_empty_tables())
-                self.spawn_client(table.x, table.y, table)
-                self.last_client_spawn_time = current_time
-            else:
-                pass
-    
     def move_waiter(self, path):
+
         for action in path:
             self.update_screen()
             pygame.time.delay(600)
@@ -143,6 +187,7 @@ class Simulation:
                 self.waiter.rotate_right()
             elif action == "left":
                 self.waiter.rotate_left()
+
 
     def get_empty_tables(self):
         empty_tables = []
