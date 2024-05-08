@@ -30,6 +30,5 @@ def main():
         sim.clock.tick(sim.fps)
 
 
-
 if __name__ == "__main__":
     main()

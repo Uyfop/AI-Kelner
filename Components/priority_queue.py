@@ -8,8 +8,9 @@ class PriorityQueue:
     def heapify(self):
         heapq.heapify(self.li)
 
-    def push(self, node: Node, weight: int) -> None:
-        heapq.heappush(self.li, (weight, node))
+    def push(self, priority: int, node: Node):
+        heapq.heappush(self.li, (priority, node))
 
     def pop(self) -> tuple[int, Node]:
         return heapq.heappop(self.li)
+

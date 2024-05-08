@@ -6,12 +6,14 @@ class KitchenStatus(Enum):
     COOKING = "Cooking"
     WAITING = "Waiting"
 
+
 class Kitchen:
 
-    def __init__(self, img: pygame.Surface,  x: int, y: int):
+    def __init__(self, img: pygame.Surface, x: int, y: int):
         self._img = img
         self.status = KitchenStatus.WAITING
         self.pos = {"x": x, "y": y}
+        self.cost = 'inf'
 
     def set_pos(self, x: int, y: int):
         self.x = x
@@ -26,3 +28,6 @@ class Kitchen:
 
     def get_img(self):
         return self._img
+
+    def get_cost(self):
+        return self.cost

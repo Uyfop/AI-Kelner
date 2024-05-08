@@ -1,11 +1,13 @@
 import pygame
+import time
 
 
-class Broken:
+class Banana:
     def __init__(self, img: pygame.Surface, x: int, y: int):
         self._img = img
         self.pos = {"x": x, "y": y}
-        self.cost = 8
+        self.timestamp = time.time()
+        self.cost = 6
 
     def set_pos(self, x: int, y: int):
         self.x = x
