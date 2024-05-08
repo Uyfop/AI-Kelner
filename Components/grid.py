@@ -81,9 +81,9 @@ class Grid:
                 for successor, action, cost in self.succ(elem.state):
                     if cost == 'inf':
                         continue
-                    g_value = cost
+                    g_value = cost + elem.weight
                     h_value = self.heuristic(elem.state, goal)
-                    new_node = Node(successor, elem, action)
+                    new_node = Node(successor, elem, action, g_value)
 
                     queue.push(g_value + h_value, new_node)
 

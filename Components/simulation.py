@@ -286,7 +286,7 @@ class Simulation:
                 elif self.__grid.get_cell(x, y).type == CellType.BANANA:
                     bananas_on_grid += 1
 
-        for _ in range(20 - bananas_on_grid):
+        for _ in range(40 - bananas_on_grid):
             x, y = random.choice(empty_squares)
             banana = Banana(banana_img, x, y)
 
