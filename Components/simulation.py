@@ -22,7 +22,7 @@ class Simulation:
             res: tuple[int, int],
             bg_color: tuple[int, int, int],
             wall_color: tuple[int, int, int],
-            move_delay: int
+            move_delay: int = 1
     ):
         self.window_width, self.window_height = res[0], res[1]
         self.__grid = grid
@@ -196,8 +196,8 @@ class Simulation:
         ]
 
         shortest_path, target_position = min(paths, key=lambda x: len(x[0]))
-        print(f"target: {target_position[0]} {target_position[1]}")
-        print(f"actions: {[action for action in shortest_path]}")
+        # print(f"target: {target_position[0]} {target_position[1]}")
+        # print(f"actions: {[action for action in shortest_path]}")
         self.move_waiter(shortest_path)
 
     def move_waiter(self, path):
