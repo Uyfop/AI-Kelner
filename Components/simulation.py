@@ -229,8 +229,41 @@ class Simulation:
             client_img,
             (self.window_width // self.__grid.get_grid_size(), self.window_height // self.__grid.get_grid_size()),
         )
+        continents = [
+            "europe",
+            "asia",
+            "north_america",
+            "south_america",
+            "africa",
+            "oceania"
+        ]
+        continent = random.choice(continents)
+        age = random.randint(18, 70)
+        budget = random.choice([0, 1, 2])
 
-        client = Client(client_img, x - 1, y)
+        is_female = random.choices([True, False])
+
+        def random_bool():
+            return random.choices([True, False], weights=[0.2, 0.8])[0]
+
+        is_vegetarian = random_bool()
+        is_lactose_intolerant = random_bool()
+        is_alcohol_abstinent = random_bool()
+        is_fit = random_bool()
+
+        client = Client(
+            client_img,
+            x - 1,
+            y,
+            age,
+            continent,
+            budget,
+            is_female,
+            is_vegetarian,
+            is_lactose_intolerant,
+            is_alcohol_abstinent,
+            is_fit
+        )
         self.clients.append(client)
         self.__grid.set_cell(x - 1, y, CellType.CLIENT, client)
         table.occupy()

@@ -7,7 +7,7 @@ class Banana:
         self._img = img
         self.pos = {"x": x, "y": y}
         self.timestamp = time.time()
-        self.cost = 6
+        self.cost = 10
 
     def set_pos(self, x: int, y: int):
         self.x = x

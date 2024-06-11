@@ -7,7 +7,7 @@ class Water:
     def __init__(self, img: pygame.Surface, x: int, y: int):
         self._img = img
         self.pos = {"x": x, "y": y}
-        self.cost = 10
+        self.cost = 6
 
     def set_pos(self, x: int, y: int):
         self.x = x
