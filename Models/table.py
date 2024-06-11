@@ -13,15 +13,18 @@ class Table:
         self.served = False
         self.plate = plate
         self.cost = 'inf'
+        self.client = None
 
-    def occupy(self):
+    def occupy(self, client):
         self.occupied = True
+        self.client = client
 
     def free(self):
         self.occupied = False
+        self.client = None
 
     def is_occupied(self):
-        return self.occupied
+        return self.client is not None
 
     def served(self):
         self.served = True

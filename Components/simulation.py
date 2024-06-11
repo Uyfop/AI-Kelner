@@ -160,9 +160,7 @@ class Simulation:
                         self.__surface.blit(image, (column_idx * cell_size, row_idx * cell_size))
 
     def update_state(self):
-        grid_size = self.__grid.get_grid_size()
         current_position = (self.waiter.pos['x'], self.waiter.pos['y'], self.waiter.direction)
-        available_positions = []
         if len(self.get_empty_tables()) != 0:
             table = random.choice(self.get_empty_tables())
             self.spawn_client(table.x, table.y, table)
@@ -170,18 +168,37 @@ class Simulation:
             pass
 
         self.spawn_banana()
-        for x in range(grid_size):
-            for y in range(grid_size):
-                if self.__grid.get_cell(x, y).type == CellType.EMPTY:
-                    available_positions.append((x, y, Direction.NORTH))
 
-        if available_positions:
-            target_position = random.choice(available_positions)
-            print(f"target: {target_position[0]} {target_position[1]}")
-            path = self.__grid.astar(current_position, target_position)
-            print(f"actions: {[action for action in path]}")
-            if path:
-                self.move_waiter(path)
+        occupied_tables = [table for table in self.tables if table.is_occupied()]
+        if occupied_tables:
+            target_table = random.choice(occupied_tables)
+            available_positions = self.get_available_positions(target_table)
+            if available_positions:
+                return self.get_shortest_path(current_position, available_positions)
+
+    def get_available_positions(self, table):
+        x, y = table.x, table.y
+        directions = [(0, -1, Direction.EAST), (0, 1, Direction.WEST)]
+        
+        available_positions = []
+        for dx, dy, direction in directions:
+            new_x, new_y = x + dx, y + dy
+            if self.__grid.get_cell(new_x, new_y).type == CellType.EMPTY:
+                available_positions.append((new_x, new_y, direction))
+        
+        return available_positions
+
+    
+    def get_shortest_path(self, current_position, available_positions):
+        paths = [
+            (self.__grid.astar(current_position, (x, y, direction)), (x, y, direction))
+            for x, y, direction in available_positions
+        ]
+
+        shortest_path, target_position = min(paths, key=lambda x: len(x[0]))
+        print(f"target: {target_position[0]} {target_position[1]}")
+        print(f"actions: {[action for action in shortest_path]}")
+        self.move_waiter(shortest_path)
 
     def move_waiter(self, path):
         while path:
@@ -266,7 +283,7 @@ class Simulation:
         )
         self.clients.append(client)
         self.__grid.set_cell(x - 1, y, CellType.CLIENT, client)
-        table.occupy()
+        table.occupy(client) 
 
     def update_screen(self):
         self.__surface.fill(self.background_color)
