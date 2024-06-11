@@ -1,5 +1,5 @@
 import pygame
-from Components import Grid, Simulation
+from Components import Grid, Simulation, DecisionTree
 
 HEIGHT = 800
 WIDTH = 800
@@ -17,10 +17,10 @@ def main():
 
     surface = pygame.display.set_mode(res)
     clock = pygame.time.Clock()
-
     grid = Grid(CELL_COUNT)
-    sim = Simulation(grid, surface, clock, FPS, (HEIGHT, WIDTH), BACKGROUND_COLOR, WALL_COLOR, MOVE_DELAY_MS)
-
+    sim = Simulation(grid, surface, clock, FPS, (HEIGHT, WIDTH), BACKGROUND_COLOR, WALL_COLOR)
+    decision_tree = DecisionTree()
+    decision_tree.initalize_tree('decision_tree_misc/data.csv')
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:

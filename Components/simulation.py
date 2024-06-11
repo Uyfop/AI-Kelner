@@ -190,6 +190,7 @@ class Simulation:
                 continue
             action = path.pop(0)
             self.update_screen()
+            pygame.time.delay(100)
             if action == "forward":
                 x, y = self.waiter.get_pos()['x'], self.waiter.get_pos()['y']
                 self.__grid.set_cell(x, y, CellType.EMPTY, None)
