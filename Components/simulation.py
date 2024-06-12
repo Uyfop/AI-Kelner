@@ -3,6 +3,7 @@ import random
 import time
 
 import pygame
+import pandas as pd
 
 from Components import Grid, CellType
 from Models import Waiter, Client, Direction, Kitchen
@@ -10,6 +11,7 @@ from Models.plate import Plate
 from Models.table import Table
 from Models.water import Water
 from Models.banana import Banana
+from Components.decision_tree import DecisionTree
 
 
 class Simulation:
@@ -22,7 +24,9 @@ class Simulation:
             res: tuple[int, int],
             bg_color: tuple[int, int, int],
             wall_color: tuple[int, int, int],
-            move_delay: int = 1
+            move_delay: int = 1,
+            decision_tree: DecisionTree = None,
+            meal_mapping: dict = None
     ):
         self.window_width, self.window_height = res[0], res[1]
         self.__grid = grid
@@ -38,6 +42,8 @@ class Simulation:
         self.waters = []
         self.next_move = pygame.time.get_ticks()
         self.move_delay = move_delay
+        self.decision_tree = decision_tree
+        self.meal_mapping = meal_mapping
         self.initialize_objects()
 
     def initialize_objects(self):
@@ -174,7 +180,59 @@ class Simulation:
             target_table = random.choice(occupied_tables)
             available_positions = self.get_available_positions(target_table)
             if available_positions:
+                self.get_meal_suggestion(target_table)
                 return self.get_shortest_path(current_position, available_positions)
+
+    def get_meal_suggestion(self, target_table: Table):
+        client: Client = target_table.client
+
+        # parse client data into pandas dataframe for tree decision
+        data = {
+            "age": [client.age],
+            "budget": [client.budget],
+            "is_female": [1 if client.is_female else 0],
+            "is_vegetarian": [1 if client.is_vegetarian else 0],
+            "is_lactose_intolerant": [1 if client.is_lactose_intolerant else 0],
+            "is_alcohol_abstinent": [1 if client.is_alcohol_abstinent else 0],
+            "is_fit": [1 if client.is_fit else 0]
+        }
+
+        continents = {
+            "africa": "continent_africa",
+            "asia": "continent_asia",
+            "europe": "continent_europe",
+            "north_america": "continent_north_america",
+            "oceania": "continent_oceania",
+            "south_america": "continent_south_america",
+        }
+
+        data.update({continents.get(client.continent): 1})
+
+        for i in continents.items():
+            if i not in data.keys():
+                data.update({i[1]: 0})
+
+        df = pd.DataFrame(data)
+        desired_order = [
+            "age",
+            "budget",
+            "is_female",
+            "is_vegetarian",
+            "is_lactose_intolerant",
+            "is_alcohol_abstinent",
+            "is_fit",
+            "continent_africa",
+            "continent_asia",
+            "continent_europe",
+            "continent_north_america",
+            "continent_oceania",
+            "continent_south_america",
+        ]
+
+        df = df.reindex(columns=desired_order)
+        suggestion = self.decision_tree.predict(df)
+        print(target_table.client)
+        print(f"suggested meal: {self.meal_mapping[suggestion[0]]}")
 
     def get_available_positions(self, table):
         x, y = table.x, table.y
@@ -207,7 +265,7 @@ class Simulation:
                 continue
             action = path.pop(0)
             self.update_screen()
-            pygame.time.delay(100)
+            pygame.time.delay(300)
             if action == "forward":
                 x, y = self.waiter.get_pos()['x'], self.waiter.get_pos()['y']
                 self.__grid.set_cell(x, y, CellType.EMPTY, None)
@@ -261,7 +319,7 @@ class Simulation:
         is_female = random.choices([True, False])
 
         def random_bool():
-            return random.choices([True, False], weights=[0.2, 0.8])[0]
+            return random.choices([True, False])[0]
 
         is_vegetarian = random_bool()
         is_lactose_intolerant = random_bool()

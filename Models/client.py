@@ -27,6 +27,11 @@ class Client:
         self.is_alcohol_abstinent = is_alcohol_abstinent
         self.is_fit = is_fit
 
+    def __str__(self) -> str:
+        return f"Client(age: {self.age}, continent: {self.continent}, budget: {self.budget}," +\
+            f" is_female: {self.is_female}, is_vegetarian: {self.is_vegetarian}, is_lactose_intolerant: {self.is_lactose_intolerant}," +\
+                f" is_alcohol_abstinent: {self.is_alcohol_abstinent}, is_fit: {self.is_fit})"
+
     def change_status(self, new_status: ClientStatus):
         if new_status in ClientStatus:
             self.status = new_status

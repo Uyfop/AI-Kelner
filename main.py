@@ -12,22 +12,28 @@ MOVE_DELAY_MS = 600
 
 def main():
     running = True
+    paused = False
     pygame.init()
     res = (HEIGHT, WIDTH)
 
     surface = pygame.display.set_mode(res)
     clock = pygame.time.Clock()
     grid = Grid(CELL_COUNT)
-    sim = Simulation(grid, surface, clock, FPS, (HEIGHT, WIDTH), BACKGROUND_COLOR, WALL_COLOR)
     decision_tree = DecisionTree()
-    decision_tree.initalize_tree('decision_tree_misc/data.csv')
+    meal_mapping = decision_tree.initalize_tree('decision_tree_misc/data.csv')
+    sim = Simulation(grid, surface, clock, FPS, (HEIGHT, WIDTH), BACKGROUND_COLOR, WALL_COLOR, decision_tree=decision_tree, meal_mapping=meal_mapping)
+
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    paused = not paused
 
-        sim.update()
-        sim.clock.tick(sim.fps)
+        if not paused:
+            sim.update()
+            sim.clock.tick(sim.fps)
 
 
 if __name__ == "__main__":
