@@ -107,16 +107,6 @@ class Simulation:
         self.waters.append(water)
         self.__grid.set_cell(3, 1, CellType.WATER, water)
 
-        banana_img_path = os.path.join("Assets", "Images", "banana.jpg")
-        banana_img = pygame.image.load(banana_img_path)
-        banana_img = pygame.transform.scale(
-            banana_img,
-            (self.window_width // grid_size, self.window_height // grid_size),
-        )
-        banana = Banana(banana_img, 3, 0)
-        self.waters.append(banana)
-        self.__grid.set_cell(3, 0, CellType.BANANA, banana)
-
         table_img_path = os.path.join("Assets", "Images", "table.png")
         table_img = pygame.image.load(table_img_path)
         table_img = pygame.transform.scale(

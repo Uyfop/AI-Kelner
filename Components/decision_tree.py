@@ -14,14 +14,13 @@ class DecisionTree:
         categorical_features = ['continent']
         df = pd.get_dummies(df, columns=categorical_features)
 
-        # Encoding target variable using map
         meal_mapping = {meal: code for code, meal in enumerate(df['suggested_meal'].unique())}
         df['suggested_meal'] = df['suggested_meal'].map(meal_mapping)
 
         X = df.drop('suggested_meal', axis=1)
         y = df['suggested_meal']
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-        clf = DecisionTreeClassifier(random_state=42)
+        clf = DecisionTreeClassifier(random_state=42, criterion='entropy')
         clf.fit(X_train, y_train)
         y_pred = clf.predict(X_test)
         accuracy = accuracy_score(y_test, y_pred)
