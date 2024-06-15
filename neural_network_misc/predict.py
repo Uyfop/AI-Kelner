@@ -10,11 +10,11 @@ def prepare_image(file):
     return img
 
 def main():
-    file_name = "plate.jpg"
-    model = tf.keras.models.load_model('../../plate_classifier_model.keras')
+    file_name = "full.jpg"
+    model = tf.keras.models.load_model('../plate_classifier_model.keras')
 
     img = prepare_image(file_name)
-    prediction = model.predict(img)
+    prediction = model.predict(img, verbose=0)
     if prediction > 0.5:
         print("full")
     else:
