@@ -237,6 +237,7 @@ class Simulation:
             else:
                 print("client's plate is empty, take it")
                 target_table.client.plate = None
+                self.served_clients.remove(target_table.client)
             self._roll_plate_change(target_table.client)
         
 
