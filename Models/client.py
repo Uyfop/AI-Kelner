@@ -12,7 +12,7 @@ class ClientStatus(Enum):
 class Client:
     def __init__(self, img: pygame.Surface, x: int, y: int, age: int, continent: str, budget: int,
                  is_female: bool, is_vegetarian: bool, is_lactose_intolerant: bool,
-                 is_alcohol_abstinent: bool, is_fit: bool):
+                 is_alcohol_abstinent: bool, is_fit: bool, plate=None):
         self._img = img
         self.pos = {"x": x, "y": y}
         self.status = ClientStatus.WAITING
@@ -26,11 +26,12 @@ class Client:
         self.is_lactose_intolerant = is_lactose_intolerant
         self.is_alcohol_abstinent = is_alcohol_abstinent
         self.is_fit = is_fit
+        self.plate: None | str = plate
 
     def __str__(self) -> str:
         return f"Client(age: {self.age}, continent: {self.continent}, budget: {self.budget}," +\
             f" is_female: {self.is_female}, is_vegetarian: {self.is_vegetarian}, is_lactose_intolerant: {self.is_lactose_intolerant}," +\
-                f" is_alcohol_abstinent: {self.is_alcohol_abstinent}, is_fit: {self.is_fit})"
+                f" is_alcohol_abstinent: {self.is_alcohol_abstinent}, is_fit: {self.is_fit}, plate: {self.plate})"
 
     def change_status(self, new_status: ClientStatus):
         if new_status in ClientStatus:

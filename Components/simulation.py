@@ -12,6 +12,7 @@ from Models.table import Table
 from Models.water import Water
 from Models.banana import Banana
 from Components.decision_tree import DecisionTree
+from Components.plate_classifier import PlateClassifier
 
 
 class Simulation:
@@ -26,6 +27,7 @@ class Simulation:
             wall_color: tuple[int, int, int],
             move_delay: int = 1,
             decision_tree: DecisionTree = None,
+            plate_classifier: PlateClassifier = None,
             meal_mapping: dict = None
     ):
         self.window_width, self.window_height = res[0], res[1]
@@ -40,10 +42,12 @@ class Simulation:
         self.clients = []
         self.tables = []
         self.waters = []
+        self.served_clients = []
         self.next_move = pygame.time.get_ticks()
         self.move_delay = move_delay
         self.decision_tree = decision_tree
         self.meal_mapping = meal_mapping
+        self.plate_classifier = plate_classifier
         self.initialize_objects()
 
     def initialize_objects(self):
@@ -170,8 +174,7 @@ class Simulation:
             target_table = random.choice(occupied_tables)
             available_positions = self.get_available_positions(target_table)
             if available_positions:
-                self.get_meal_suggestion(target_table)
-                return self.get_shortest_path(current_position, available_positions)
+                return self.get_shortest_path(current_position, available_positions, target_table)
 
     def get_meal_suggestion(self, target_table: Table):
         client: Client = target_table.client
@@ -222,7 +225,32 @@ class Simulation:
         df = df.reindex(columns=desired_order)
         suggestion = self.decision_tree.predict(df)
         print(target_table.client)
-        print(f"suggested meal: {self.meal_mapping[suggestion[0]]}")
+        if not target_table.client.plate:
+            print(f"suggested meal: {self.meal_mapping[suggestion[0]]}")
+            target_table.client.plate = self._get_plate_path("./neural_network_training/full")
+            self._roll_plate_change()
+            self.served_clients.append(target_table.client)
+        else:
+            prediciton = self.plate_classifier.predict(target_table.client.plate)
+            if prediciton > 0.5: 
+                print("client's plate is not empty yet, continue")
+            else:
+                print("client's plate is empty, take it")
+                target_table.client.plate = None
+            self._roll_plate_change(target_table.client)
+        
+
+    def _roll_plate_change(self, client_to_omit=None):
+        for client in self.served_clients:
+            if client_to_omit and client_to_omit == client:
+                continue
+            switch_to_empty= random.choices([True, False], weights=[0.20,0.80])[0]
+            if switch_to_empty: 
+                client.plate = self._get_plate_path("./neural_network_training/empty")
+
+    def _get_plate_path(self, directory: str) -> str:
+        plate_img_path = random.choice(os.listdir(directory))
+        return f"{directory}/{plate_img_path}"
 
     def get_available_positions(self, table):
         x, y = table.x, table.y
@@ -237,7 +265,7 @@ class Simulation:
         return available_positions
 
     
-    def get_shortest_path(self, current_position, available_positions):
+    def get_shortest_path(self, current_position, available_positions, target_table):
         paths = [
             (self.__grid.astar(current_position, (x, y, direction)), (x, y, direction))
             for x, y, direction in available_positions
@@ -246,9 +274,9 @@ class Simulation:
         shortest_path, target_position = min(paths, key=lambda x: len(x[0]))
         # print(f"target: {target_position[0]} {target_position[1]}")
         # print(f"actions: {[action for action in shortest_path]}")
-        self.move_waiter(shortest_path)
+        self.move_waiter(shortest_path, target_table)
 
-    def move_waiter(self, path):
+    def move_waiter(self, path, target_table):
         while path:
             current_time = pygame.time.get_ticks()
             if current_time <= self.next_move:
@@ -265,6 +293,7 @@ class Simulation:
             elif action == "left":
                 self.waiter.rotate_left()
             self.next_move = current_time + self.move_delay
+        self.get_meal_suggestion(target_table)
 
     def get_empty_tables(self):
         empty_tables = []
@@ -346,7 +375,7 @@ class Simulation:
 
     def spawn_banana(self):
         grid_size = self.__grid.get_grid_size()
-        banana_img_path = os.path.join("Assets", "Images", "banana.jpg")
+        banana_img_path = os.path.join("Assets", "Images", "banana.png")
         banana_img = pygame.image.load(banana_img_path)
         banana_img = pygame.transform.scale(
             banana_img,

@@ -1,5 +1,5 @@
 import pygame
-from Components import Grid, Simulation, DecisionTree
+from Components import Grid, Simulation, DecisionTree, PlateClassifier
 
 HEIGHT = 800
 WIDTH = 800
@@ -20,8 +20,10 @@ def main():
     clock = pygame.time.Clock()
     grid = Grid(CELL_COUNT)
     decision_tree = DecisionTree()
+    plate_classifier = PlateClassifier()
     meal_mapping = decision_tree.initalize_tree('decision_tree_misc/data.csv')
     sim = Simulation(grid, surface, clock, FPS, (HEIGHT, WIDTH), BACKGROUND_COLOR, WALL_COLOR, decision_tree=decision_tree, meal_mapping=meal_mapping)
+    sim.plate_classifier = plate_classifier
 
     while running:
         for event in pygame.event.get():
