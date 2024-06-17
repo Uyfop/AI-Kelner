@@ -4,11 +4,11 @@ from Models.plate import Plate
 
 
 class Table:
-    def __init__(self, img: pygame.Surface, x: int, y: int, number: int, plate: Plate):
+    def __init__(self, img: pygame.Surface, x: int, y: int, index: int, plate: Plate):
         self._img = img
         self.x = x
         self.y = y
-        self.number = number
+        self.index = index
         self.occupied = False
         self.served = False
         self.plate = plate
@@ -35,8 +35,8 @@ class Table:
     def is_served(self):
         return self.served
 
-    def get_number(self):
-        return self.number
+    def get_index(self):
+        return self.index
 
     def get_pos(self):
         return {"x": self.x, "y": self.y}
@@ -50,4 +50,5 @@ class Table:
 
     def get_cost(self):
         return self.cost
+
 

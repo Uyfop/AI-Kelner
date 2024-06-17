@@ -118,12 +118,12 @@ class Simulation:
             (self.window_width // grid_size, self.window_height // grid_size),
         )
 
-        x = 0
+        index = 0
         for i in range(2, grid_size, 4):
             for j in range(2, grid_size, 4):
-                x += 1
+                index += 1
                 plate = Plate()
-                table = Table(table_img, i, j, x, plate)
+                table = Table(table_img, i, j, index, plate)
                 self.tables.append(table)
                 self.__grid.set_cell(i, j, CellType.TABLE, table)
 
@@ -162,8 +162,8 @@ class Simulation:
     def update_state(self):
         current_position = (self.waiter.pos['x'], self.waiter.pos['y'], self.waiter.direction)
         if len(self.get_empty_tables()) != 0:
-            table = random.choice(self.get_empty_tables())
-            self.spawn_client(table.x, table.y, table)
+            for table in self.get_empty_tables():
+                self.spawn_client(table.x, table.y, table)
         else:
             pass
 
@@ -232,21 +232,20 @@ class Simulation:
             self.served_clients.append(target_table.client)
         else:
             prediciton = self.plate_classifier.predict(target_table.client.plate)
-            if prediciton > 0.5: 
+            if prediciton > 0.5:
                 print("client's plate is not empty yet, continue")
             else:
                 print("client's plate is empty, take it")
                 target_table.client.plate = None
                 self.served_clients.remove(target_table.client)
             self._roll_plate_change(target_table.client)
-        
 
     def _roll_plate_change(self, client_to_omit=None):
         for client in self.served_clients:
             if client_to_omit and client_to_omit == client:
                 continue
-            switch_to_empty= random.choices([True, False], weights=[0.20,0.80])[0]
-            if switch_to_empty: 
+            switch_to_empty = random.choices([True, False], weights=[0.20, 0.80])[0]
+            if switch_to_empty:
                 client.plate = self._get_plate_path("./neural_network_training/empty")
 
     def _get_plate_path(self, directory: str) -> str:
@@ -256,16 +255,15 @@ class Simulation:
     def get_available_positions(self, table):
         x, y = table.x, table.y
         directions = [(0, -1, Direction.EAST), (0, 1, Direction.WEST)]
-        
+
         available_positions = []
         for dx, dy, direction in directions:
             new_x, new_y = x + dx, y + dy
             if self.__grid.get_cell(new_x, new_y).type == CellType.EMPTY:
                 available_positions.append((new_x, new_y, direction))
-        
+
         return available_positions
 
-    
     def get_shortest_path(self, current_position, available_positions, target_table):
         paths = [
             (self.__grid.astar(current_position, (x, y, direction)), (x, y, direction))
@@ -361,7 +359,7 @@ class Simulation:
         )
         self.clients.append(client)
         self.__grid.set_cell(x - 1, y, CellType.CLIENT, client)
-        table.occupy(client) 
+        table.occupy(client)
 
     def update_screen(self):
         self.__surface.fill(self.background_color)
@@ -412,3 +410,9 @@ class Simulation:
                     banana = cell.data
                     if current_time - banana.timestamp >= despawn_time:
                         self.__grid.set_cell(x, y, CellType.EMPTY, None)
+
+    def get_table_by_index(self, index: int):
+        for table in self.tables:
+            if table.get_index() == index:
+                return table.x, table.y
+        return None
